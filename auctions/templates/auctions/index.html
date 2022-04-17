@@ -1,7 +1,13 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+<h2>Active Listings</h2>
 
-    TODO
+{% for listing in listings %}
+<img src="{{ listing.photo }}" alt="" width="150px">
+<p>{{ listing.name }}</p>
+<p>Price: ${{ listing.price }}</p>
+<p>{{ listing.description}}</p>
+<p>Created {{ listing.created|date:"M. j, o, g:i a" }}</p>
+{% endfor %}
 {% endblock %}

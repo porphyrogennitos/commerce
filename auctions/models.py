@@ -7,4 +7,8 @@ class User(AbstractUser):
 
 
 class Listing(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=64)
+    photo = models.URLField()
+    description = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    created = models.DateTimeField(auto_now=True)
