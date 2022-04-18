@@ -18,3 +18,9 @@ class Bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     bid = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ManyToManyField(Listing, blank=True)
+    comment = models.TextField()
