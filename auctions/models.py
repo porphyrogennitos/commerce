@@ -8,10 +8,10 @@ class User(AbstractUser):
 
 class Listing(models.Model):
     name = models.CharField(max_length=64)
-    photo = models.URLField()
+    photo = models.URLField(blank=True)
     description = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    created = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now=True, blank=True)
 
 
 class Bid(models.Model):
