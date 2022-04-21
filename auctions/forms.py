@@ -10,3 +10,11 @@ class ListingForm(forms.Form):
             'placeholder': 'Image address'
         }
     ))
+
+
+class BidForm(forms.Form):
+    bid = forms.DecimalField(label='', min_value=1, max_digits=10, decimal_places=2, widget=forms.NumberInput(
+        attrs={
+            'placeholder': 'Bid'
+        }
+    ))

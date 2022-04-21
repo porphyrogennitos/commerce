@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>Listing: {{ name }}</h2>
+<form action="{% url 'watchlist' %}">
+    <button type="submit" class="btn btn-secondary btn-sm">Watchlist</button>
+</form>
+<img src="{{ photo }}">
+<p>{{ description }}</p>
+<p>{{ price }}</p>
+
+<form action="">
+    {{ form }}
+    <button type="submit" class="btn btn-primary">Place Bid</button>
+</form>
+{% endblock %}

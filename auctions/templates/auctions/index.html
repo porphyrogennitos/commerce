@@ -4,10 +4,12 @@
 <h2>Active Listings</h2>
 
 {% for listing in listings %}
-<img src="{{ listing.photo }}" alt="" width="150px">
-<p>{{ listing.name }}</p>
-<p>Price: ${{ listing.price }}</p>
-<p>{{ listing.description}}</p>
-<p>Created {{ listing.created|date:"M. j, o, g:i a" }}</p>
+<a href="{% url 'listing' listing.id %}" class="text-decoration-none text-reset">
+    <img src="{{ listing.photo }}" alt="" width="150px">
+    <h3 class="fs-5">{{ listing.name }}</h3 class="fs-5">
+    <p><strong>Price:</strong> ${{ listing.price }}</p>
+    <p>{{ listing.description}}</p>
+    <small>Created {{ listing.created|date:"M. j, o, g:i a" }}</small>
+</a>
 {% endfor %}
 {% endblock %}

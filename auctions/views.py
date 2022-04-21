@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .forms import ListingForm
+from .forms import *
 from .models import *
 
 
@@ -84,3 +84,20 @@ def create_listing(request):
         return render(request, "auctions/create-listing.html", {
         "form": ListingForm()
         })
+
+
+def listing(request, id):
+    listing = Listing.objects.get(pk=id)
+
+    return render(request, "auctions/listing.html", {
+        "pk": listing.id,
+        "name": listing.name,
+        "photo": listing.photo,
+        "description": listing.description,
+        "price": listing.price,
+        "form": BidForm()
+    })
+
+
+def watchlist(request):
+    return render(request, "auctions/watchlist.html")

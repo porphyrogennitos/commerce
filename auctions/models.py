@@ -22,5 +22,10 @@ class Bid(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    listing = models.ManyToManyField(Listing, blank=True)
+    listings = models.ManyToManyField(Listing, blank=True)
     comment = models.TextField()
+
+
+class Watchlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listings = models.ManyToManyField(Listing, blank=True)
