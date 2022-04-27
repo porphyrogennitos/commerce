@@ -100,4 +100,20 @@ def listing(request, id):
 
 
 def watchlist(request):
-    return render(request, "auctions/watchlist.html")
+    user = request.user
+
+    if request.method == "POST":
+        pk = int(request.POST.get('pk'))
+        listing = Listing.objects.get(pk=pk)
+
+        watchlist_obj, created = Watchlist.objects.get_or_create(user=user)
+        watchlist_obj.listings.add(listing)
+
+        return HttpResponseRedirect('/')
+    else:
+        watchlist = Watchlist.objects.get(user=user.id)
+        print(watchlist)
+
+        return render(request, "auctions/watchlist.html", {
+            "watchlist": watchlist
+        })

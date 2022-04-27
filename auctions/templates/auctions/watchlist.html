@@ -1,0 +1,17 @@
+{% extends 'auctions/layout.html' %} 
+
+{% block body %} 
+
+<a href="#" class="text-decoration-none text-reset">
+    <img src="{{ photo }}" alt="" width="150px">
+    <h3 class="fs-5">{{ name }}</h3 class="fs-5">
+    <p><strong>Price:</strong> ${{ price }}</p>
+    <p>{{ description}}</p>
+    <small>Created {{ created|date:"M. j, o, g:i a" }}</small>
+</a>
+
+{% for listing in watchlist.listings.all %} 
+    <p>{{ listing.name }}</p>
+{% endfor %}
+
+{% endblock %}
