@@ -5,7 +5,7 @@
 <form action="{% url 'watchlist' %}" method="post">
     {% csrf_token %}
     <input type="hidden" name="pk" value="{{ pk }}">
-    <button type="submit" class="btn btn-secondary btn-sm">Watchlist</button>
+    <button type="submit" class="btn btn-secondary btn-sm">{{ button }}</button>
 </form>
 <img src="{{ photo }}">
 <p>{{ description }}</p>

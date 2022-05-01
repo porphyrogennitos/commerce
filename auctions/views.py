@@ -88,6 +88,11 @@ def create_listing(request):
 
 def listing(request, id):
     listing = Listing.objects.get(pk=id)
+    
+    if Watchlist.objects.filter(listings__id=id).exists():
+        button = "Remove"
+    else:
+        button = "Watchlist"
 
     return render(request, "auctions/listing.html", {
         "pk": listing.id,
@@ -95,7 +100,8 @@ def listing(request, id):
         "photo": listing.photo,
         "description": listing.description,
         "price": listing.price,
-        "form": BidForm()
+        "form": BidForm(),
+        "button": button
     })
 
 
@@ -107,12 +113,16 @@ def watchlist(request):
         listing = Listing.objects.get(pk=pk)
 
         watchlist_obj, created = Watchlist.objects.get_or_create(user=user)
-        watchlist_obj.listings.add(listing)
+
+        # Remove or add item
+        if Watchlist.objects.filter(listings__id=pk).exists():
+            watchlist_obj.listings.remove(listing)
+        else:
+            watchlist_obj.listings.add(listing)
 
         return HttpResponseRedirect('/')
     else:
         watchlist = Watchlist.objects.get(user=user.id)
-        print(watchlist)
 
         return render(request, "auctions/watchlist.html", {
             "watchlist": watchlist
