@@ -1,6 +1,7 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -87,22 +88,41 @@ def create_listing(request):
 
 
 def listing(request, id):
-    listing = Listing.objects.get(pk=id)
-    
-    if Watchlist.objects.filter(listings__id=id).exists():
-        button = "Remove"
-    else:
-        button = "Watchlist"
+    user = request.user
 
-    return render(request, "auctions/listing.html", {
-        "pk": listing.id,
-        "name": listing.name,
-        "photo": listing.photo,
-        "description": listing.description,
-        "price": listing.price,
-        "form": BidForm(),
-        "button": button
-    })
+    if request.method == "POST":
+        form = BidForm(request.POST)
+
+        if form.is_valid():
+            bid = form.cleaned_data["bid"]
+
+            listing = Listing.objects.get(id=id)
+
+            if bid > listing.price:
+                listing.price = bid
+                listing.save()
+            else:
+                messages.add_message(request, messages.ERROR, 'Place a higher bid.')
+
+            return HttpResponseRedirect(reverse('listing', args=[id]))
+    else:
+        listing = Listing.objects.get(pk=id)
+        
+        # Check if item is in watchlist
+        if Watchlist.objects.filter(listings__id=id).exists():
+            button = "Remove"
+        else:
+            button = "Watchlist"
+
+        return render(request, "auctions/listing.html", {
+            "pk": listing.id,
+            "name": listing.name,
+            "photo": listing.photo,
+            "description": listing.description,
+            "price": listing.price,
+            "form": BidForm(),
+            "button": button
+        })
 
 
 def watchlist(request):

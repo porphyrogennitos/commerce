@@ -8,7 +8,7 @@
     <img src="{{ listing.photo }}" alt="" width="150px">
     <h3 class="fs-5">{{ listing.name }}</h3 class="fs-5">
     <p><strong>Price:</strong> ${{ listing.price }}</p>
-    <p>{{ listing.description}}</p>
+    <p>{{ listing.description }}</p>
     <small>Created {{ listing.created|date:"M. j, o, g:i a" }}</small>
 </a>
 {% endfor %}

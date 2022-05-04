@@ -9,9 +9,16 @@
 </form>
 <img src="{{ photo }}">
 <p>{{ description }}</p>
-<p>{{ price }}</p>
+<p>$ {{ price }}</p>
 
-<form action="">
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-danger" role="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<form action="{% url 'listing' pk %}" method="post">
+    {% csrf_token %}
     {{ form }}
     <button type="submit" class="btn btn-primary">Place Bid</button>
 </form>
