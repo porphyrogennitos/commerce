@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from .forms import *
@@ -114,20 +114,35 @@ def listing(request, id):
         listing = Listing.objects.get(pk=id)
 
         # Check if item is in watchlist
-        if Watchlist.objects.filter(listings__id=id).exists():
+        if Watchlist.objects.filter(user=user.id).filter(listings__id=id).exists():
             button = "Remove"
         else:
             button = "Watchlist"
 
-        return render(request, "auctions/listing.html", {
-            "pk": listing.id,
-            "name": listing.name,
-            "photo": listing.photo,
-            "description": listing.description,
-            "price": listing.price,
-            "form": BidForm(),
-            "button": button
-        })
+        # Check if user is the one who made the bid
+        if user.id == listing.user.id:
+            close = "Close Auction"
+
+            return render(request, "auctions/listing.html", {
+                "pk": listing.id,
+                "name": listing.name,
+                "photo": listing.photo,
+                "description": listing.description,
+                "price": listing.price,
+                "form": BidForm(),
+                "button": button,
+                "close": close
+            })
+        else:
+            return render(request, "auctions/listing.html", {
+                "pk": listing.id,
+                "name": listing.name,
+                "photo": listing.photo,
+                "description": listing.description,
+                "price": listing.price,
+                "form": BidForm(),
+                "button": button
+            })
 
 
 def watchlist(request):
@@ -147,7 +162,8 @@ def watchlist(request):
 
         return HttpResponseRedirect('/')
     else:
-        watchlist = Watchlist.objects.get(user=user.id)
+        # watchlist = Watchlist.objects.get(user=user.id)
+        watchlist = get_object_or_404(Watchlist, user=user.id)
 
         return render(request, "auctions/watchlist.html", {
             "watchlist": watchlist
