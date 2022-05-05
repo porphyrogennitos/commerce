@@ -68,6 +68,8 @@ def register(request):
 
 
 def create_listing(request):
+    user = request.user
+    
     if request.method == 'POST':
         form = ListingForm(request.POST)
 
@@ -77,13 +79,14 @@ def create_listing(request):
             price = form.cleaned_data['price']
             photo = form.cleaned_data['photo']
 
-            listing = Listing(name=title, photo=photo, description=description, price=price)
+            listing = Listing(user=user, name=title, photo=photo,
+                              description=description, price=price)
             listing.save()
 
             return HttpResponseRedirect('/')
     else:
         return render(request, "auctions/create-listing.html", {
-        "form": ListingForm()
+            "form": ListingForm()
         })
 
 
@@ -98,16 +101,18 @@ def listing(request, id):
 
             listing = Listing.objects.get(id=id)
 
+            # Check if bid is higher than price.
             if bid > listing.price:
                 listing.price = bid
                 listing.save()
             else:
-                messages.add_message(request, messages.ERROR, 'Place a higher bid.')
+                messages.add_message(
+                    request, messages.ERROR, 'Place a higher bid.')
 
             return HttpResponseRedirect(reverse('listing', args=[id]))
     else:
         listing = Listing.objects.get(pk=id)
-        
+
         # Check if item is in watchlist
         if Watchlist.objects.filter(listings__id=id).exists():
             button = "Remove"

@@ -7,6 +7,7 @@ class User(AbstractUser):
 
 
 class Listing(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
     photo = models.URLField(blank=True)
     description = models.CharField(max_length=255)
@@ -14,7 +15,7 @@ class Listing(models.Model):
     created = models.DateTimeField(auto_now=True, blank=True)
 
     def __str__(self):
-        return f"{self.id}|{self.name}|{self.photo}|{self.description}|{self.price}|{self.created}"
+        return f"{self.id}: {self.user}, {self.name}, {self.photo}, {self.description}, {self.price}, {self.created}."
 
 
 class Bid(models.Model):
