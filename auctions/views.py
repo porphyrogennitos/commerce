@@ -119,6 +119,7 @@ def listing(request, id):
         else:
             button = "Watchlist"
 
+        print(listing.user.username)
         # Check if user is the one who made the bid
         if user.id == listing.user.id:
             close = "Close Auction"
@@ -134,8 +135,11 @@ def listing(request, id):
                 "close": close
             })
         else:
+            username = listing.user.username
+
             return render(request, "auctions/listing.html", {
                 "pk": listing.id,
+                "username": username,
                 "name": listing.name,
                 "photo": listing.photo,
                 "description": listing.description,

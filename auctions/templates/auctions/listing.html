@@ -25,4 +25,11 @@
     <button type="submit" class="btn btn-danger">{{ close }}</button>
     {% endif %}
 </form>
+
+{% if username %}
+<h2>Details</h2>
+<ul>
+    <li>Listed by: {{ username }}</li>
+</ul>
+{% endif %}
 {% endblock %}
