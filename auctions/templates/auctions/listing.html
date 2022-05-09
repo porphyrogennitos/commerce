@@ -21,10 +21,14 @@
     {% csrf_token %}
     {{ form }}
     <button type="submit" class="btn btn-primary">Place Bid</button>
-    {% if close %} 
-    <button type="submit" class="btn btn-danger">{{ close }}</button>
-    {% endif %}
 </form>
+
+{% if close %} 
+<form action="{% url 'listing' pk %}" method="post">
+    {% csrf_token %} 
+    <button type="submit" class="btn btn-danger" name="close">{{ close }}</button>
+</form>
+{% endif %}
 
 {% if username %}
 <h2>Details</h2>

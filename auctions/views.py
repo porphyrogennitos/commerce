@@ -94,12 +94,23 @@ def listing(request, id):
     user = request.user
 
     if request.method == "POST":
+
+        # If user pressed "Close Auction".
+        if "close" in request.POST:
+            listing = Listing.objects.get(id=id)
+            listing.active = False
+            listing.save()
+        
         form = BidForm(request.POST)
 
         if form.is_valid():
             bid = form.cleaned_data["bid"]
 
             listing = Listing.objects.get(id=id)
+
+            # # Add item to watchlist if user bids
+            # watchlist_obj = Watchlist.objects.create(user=user)
+            # watchlist_obj.listings.add(listing)
 
             # Check if bid is higher than price.
             if bid > listing.price:
@@ -119,8 +130,7 @@ def listing(request, id):
         else:
             button = "Watchlist"
 
-        print(listing.user.username)
-        # Check if user is the one who made the bid
+        # Check if user is the one who created the listing
         if user.id == listing.user.id:
             close = "Close Auction"
 
@@ -151,23 +161,26 @@ def listing(request, id):
 
 def watchlist(request):
     user = request.user
+    watchlist_obj, created = Watchlist.objects.get_or_create(user=user)
 
     if request.method == "POST":
         pk = int(request.POST.get('pk'))
         listing = Listing.objects.get(pk=pk)
 
-        watchlist_obj, created = Watchlist.objects.get_or_create(user=user)
+
+        # watchlist_obj, created = Watchlist.objects.get_or_create(user=user)
+        # watchlist_obj = Watchlist.objects.create(user=user)
 
         # Remove or add item
-        if Watchlist.objects.filter(listings__id=pk).exists():
+        if Watchlist.objects.filter(user=user).filter(listings__id=pk).exists():
             watchlist_obj.listings.remove(listing)
         else:
             watchlist_obj.listings.add(listing)
 
         return HttpResponseRedirect('/')
     else:
-        # watchlist = Watchlist.objects.get(user=user.id)
-        watchlist = get_object_or_404(Watchlist, user=user.id)
+        # watchlist = get_object_or_404(Watchlist, user=user.id)
+        watchlist = Watchlist.objects.filter(user=user.id).get()
 
         return render(request, "auctions/watchlist.html", {
             "watchlist": watchlist
