@@ -69,7 +69,7 @@ def register(request):
 
 def create_listing(request):
     user = request.user
-    
+
     if request.method == 'POST':
         form = ListingForm(request.POST)
 
@@ -100,27 +100,27 @@ def listing(request, id):
             listing = Listing.objects.get(id=id)
             listing.active = False
             listing.save()
-        
-        form = BidForm(request.POST)
+        else:
+            form = BidForm(request.POST)
 
-        if form.is_valid():
-            bid = form.cleaned_data["bid"]
+            if form.is_valid():
+                bid = form.cleaned_data["bid"]
 
-            listing = Listing.objects.get(id=id)
+                listing = Listing.objects.get(id=id)
 
-            # # Add item to watchlist if user bids
-            # watchlist_obj = Watchlist.objects.create(user=user)
-            # watchlist_obj.listings.add(listing)
+                print(listing.id)
 
-            # Check if bid is higher than price.
-            if bid > listing.price:
-                listing.price = bid
-                listing.save()
-            else:
-                messages.add_message(
-                    request, messages.ERROR, 'Place a higher bid.')
+                # Check if bid is higher than price.
+                if bid > listing.price:
+                    listing.price = bid
+                    listing.save()
 
-            return HttpResponseRedirect(reverse('listing', args=[id]))
+                    Bid.objects.create(user=user, listing=listing, bid=bid)
+                else:
+                    messages.add_message(
+                        request, messages.ERROR, 'Place a higher bid.')
+
+                return HttpResponseRedirect(reverse('listing', args=[id]))
     else:
         listing = Listing.objects.get(pk=id)
 
@@ -130,46 +130,72 @@ def listing(request, id):
         else:
             button = "Watchlist"
 
+        # Check if the user has the highest bid
+        bid = Bid.objects.filter(listing=listing).latest('bid')
+
         # Check if user is the one who created the listing
         if user.id == listing.user.id:
             close = "Close Auction"
 
-            return render(request, "auctions/listing.html", {
-                "pk": listing.id,
-                "name": listing.name,
-                "photo": listing.photo,
-                "description": listing.description,
-                "price": listing.price,
-                "form": BidForm(),
-                "button": button,
-                "close": close
-            })
+            # Check if the user has the highest bid
+            if bid.user == user:
+                return render(request, "auctions/listing.html", {
+                    "pk": listing.id,
+                    "name": listing.name,
+                    "photo": listing.photo,
+                    "description": listing.description,
+                    "price": listing.price,
+                    "form": BidForm(),
+                    "button": button,
+                    "close": close,
+                    "message": "You have the highest bid."
+                })
+            else:
+                return render(request, "auctions/listing.html", {
+                    "pk": listing.id,
+                    "name": listing.name,
+                    "photo": listing.photo,
+                    "description": listing.description,
+                    "price": listing.price,
+                    "form": BidForm(),
+                    "button": button,
+                    "close": close
+                })
         else:
             username = listing.user.username
-
-            return render(request, "auctions/listing.html", {
-                "pk": listing.id,
-                "username": username,
-                "name": listing.name,
-                "photo": listing.photo,
-                "description": listing.description,
-                "price": listing.price,
-                "form": BidForm(),
-                "button": button
-            })
-
+            
+            # Check if the user has the highest bid
+            if bid.user == user:
+                return render(request, "auctions/listing.html", {
+                    "pk": listing.id,
+                    "username": username,
+                    "name": listing.name,
+                    "photo": listing.photo,
+                    "description": listing.description,
+                    "price": listing.price,
+                    "form": BidForm(),
+                    "button": button,
+                    "message": "You have the highest bid."
+                })
+            else:
+                return render(request, "auctions/listing.html", {
+                    "pk": listing.id,
+                    "username": username,
+                    "name": listing.name,
+                    "photo": listing.photo,
+                    "description": listing.description,
+                    "price": listing.price,
+                    "form": BidForm(),
+                    "button": button,
+                })
 
 def watchlist(request):
-    user = request.user
-    watchlist_obj, created = Watchlist.objects.get_or_create(user=user)
+    user=request.user
+    watchlist_obj, created=Watchlist.objects.get_or_create(user=user)
 
     if request.method == "POST":
-        pk = int(request.POST.get('pk'))
-        listing = Listing.objects.get(pk=pk)
-
-
-        # watchlist_obj, created = Watchlist.objects.get_or_create(user=user)
-        # watchlist_obj = Watchlist.objects.create(user=user)
+        pk=int(request.POST.get('pk'))
+        listing=Listing.objects.get(pk=pk)
 
         # Remove or add item
         if Watchlist.objects.filter(user=user).filter(listings__id=pk).exists():
@@ -179,8 +205,7 @@ def watchlist(request):
 
         return HttpResponseRedirect('/')
     else:
-        # watchlist = get_object_or_404(Watchlist, user=user.id)
-        watchlist = Watchlist.objects.filter(user=user.id).get()
+        watchlist=Watchlist.objects.filter(user=user.id).get()
 
         return render(request, "auctions/watchlist.html", {
             "watchlist": watchlist

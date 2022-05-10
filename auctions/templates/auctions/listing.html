@@ -11,11 +11,18 @@
 <p>{{ description }}</p>
 <p>$ {{ price }}</p>
 
+{% if message %} 
+<div class="alert alert-success" role="alert">{{ message }}</div>
+{% endif %}
+
 {% if messages %}
 {% for message in messages %}
+{% if message.level == DEFAULT_MESSAGE_LEVELS.DANGER %}
 <div class="alert alert-danger" role="alert">{{ message }}</div>
+{% endif %}
 {% endfor %}
 {% endif %}
+
 
 <form action="{% url 'listing' pk %}" method="post">
     {% csrf_token %}
