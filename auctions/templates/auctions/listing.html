@@ -2,17 +2,23 @@
 
 {% block body %}
 <h2>Listing: {{ name }}</h2>
+{% if active %}
 <form action="{% url 'watchlist' %}" method="post">
     {% csrf_token %}
     <input type="hidden" name="pk" value="{{ pk }}">
     <button type="submit" class="btn btn-secondary btn-sm">{{ button }}</button>
 </form>
+{% endif %}
 <img src="{{ photo }}">
 <p>{{ description }}</p>
 <p>$ {{ price }}</p>
 
+{% if active %}
 {% if message %} 
 <div class="alert alert-success" role="alert">{{ message }}</div>
+{% endif %}
+{% else %}
+<div class="alert alert-success" role="alert">You have won the bid!</div>
 {% endif %}
 
 {% if messages %}
@@ -23,7 +29,7 @@
 {% endfor %}
 {% endif %}
 
-
+{% if active %}
 <form action="{% url 'listing' pk %}" method="post">
     {% csrf_token %}
     {{ form }}
@@ -35,6 +41,7 @@
     {% csrf_token %} 
     <button type="submit" class="btn btn-danger" name="close">{{ close }}</button>
 </form>
+{% endif %}
 {% endif %}
 
 {% if username %}

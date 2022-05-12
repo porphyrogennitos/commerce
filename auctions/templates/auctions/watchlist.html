@@ -8,6 +8,9 @@
     <p><strong>Price:</strong> ${{ listing.price }}</p>
     <p>{{ listing.description}}</p>
     <small>Created {{ listing.created|date:"M. j, o, g:i a" }}</small>
+    {% if not listing.active %} 
+    <div class="text-info">Closed</div>
+    {% endif %}
 </a>
 {% empty %}
 <p>No items.</p>

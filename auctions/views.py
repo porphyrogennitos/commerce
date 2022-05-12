@@ -100,6 +100,15 @@ def listing(request, id):
             listing = Listing.objects.get(id=id)
             listing.active = False
             listing.save()
+
+            # The listing is not saved in winner's watchlist so
+            # we must add it.
+            winner = Bid.objects.filter(listing=id).latest('bid').user
+    
+            watchlist_obj, created = Watchlist.objects.get_or_create(user=winner)
+            watchlist_obj.listings.add(listing)
+
+            return HttpResponseRedirect('/')
         else:
             form = BidForm(request.POST)
 
@@ -141,6 +150,7 @@ def listing(request, id):
                 pass
             else:
                 bid = bid.latest('bid')
+
                 # Check if logged user has the highest bid
                 if bid.user == user:
                     return render(request, "auctions/listing.html", {
@@ -152,6 +162,7 @@ def listing(request, id):
                         "form": BidForm(),
                         "button": button,
                         "close": close,
+                        "active": listing.active,
                         "message": "You have the highest bid."
                     })
                 else:
@@ -163,6 +174,7 @@ def listing(request, id):
                         "price": listing.price,
                         "form": BidForm(),
                         "button": button,
+                        "active": listing.active,
                         "close": close
                     })
 
@@ -174,6 +186,7 @@ def listing(request, id):
                 "price": listing.price,
                 "form": BidForm(),
                 "button": button,
+                "active": listing.active,
                 "close": close
             })
         else:
@@ -194,6 +207,7 @@ def listing(request, id):
                         "price": listing.price,
                         "form": BidForm(),
                         "button": button,
+                        "active": listing.active,
                         "message": "You have the highest bid."
                     })
                 else:
@@ -205,6 +219,7 @@ def listing(request, id):
                         "description": listing.description,
                         "price": listing.price,
                         "form": BidForm(),
+                        "active": listing.active,
                         "button": button,
                     })
 
@@ -216,6 +231,7 @@ def listing(request, id):
                 "description": listing.description,
                 "price": listing.price,
                 "form": BidForm(),
+                "active": listing.active,
                 "button": button,
             })
 
