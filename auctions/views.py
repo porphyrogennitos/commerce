@@ -131,71 +131,102 @@ def listing(request, id):
             button = "Watchlist"
 
         # Check if the user has the highest bid
-        bid = Bid.objects.filter(listing=listing).latest('bid')
+        bid = Bid.objects.filter(listing=listing)
 
         # Check if user is the one who created the listing
         if user.id == listing.user.id:
             close = "Close Auction"
 
-            # Check if the user has the highest bid
-            if bid.user == user:
-                return render(request, "auctions/listing.html", {
-                    "pk": listing.id,
-                    "name": listing.name,
-                    "photo": listing.photo,
-                    "description": listing.description,
-                    "price": listing.price,
-                    "form": BidForm(),
-                    "button": button,
-                    "close": close,
-                    "message": "You have the highest bid."
-                })
+            if not bid:
+                pass
             else:
-                return render(request, "auctions/listing.html", {
-                    "pk": listing.id,
-                    "name": listing.name,
-                    "photo": listing.photo,
-                    "description": listing.description,
-                    "price": listing.price,
-                    "form": BidForm(),
-                    "button": button,
-                    "close": close
-                })
+                bid = bid.latest('bid')
+                # Check if logged user has the highest bid
+                if bid.user == user:
+                    return render(request, "auctions/listing.html", {
+                        "pk": listing.id,
+                        "name": listing.name,
+                        "photo": listing.photo,
+                        "description": listing.description,
+                        "price": listing.price,
+                        "form": BidForm(),
+                        "button": button,
+                        "close": close,
+                        "message": "You have the highest bid."
+                    })
+                else:
+                    return render(request, "auctions/listing.html", {
+                        "pk": listing.id,
+                        "name": listing.name,
+                        "photo": listing.photo,
+                        "description": listing.description,
+                        "price": listing.price,
+                        "form": BidForm(),
+                        "button": button,
+                        "close": close
+                    })
+
+            return render(request, "auctions/listing.html", {
+                "pk": listing.id,
+                "name": listing.name,
+                "photo": listing.photo,
+                "description": listing.description,
+                "price": listing.price,
+                "form": BidForm(),
+                "button": button,
+                "close": close
+            })
         else:
             username = listing.user.username
-            
-            # Check if the user has the highest bid
-            if bid.user == user:
-                return render(request, "auctions/listing.html", {
-                    "pk": listing.id,
-                    "username": username,
-                    "name": listing.name,
-                    "photo": listing.photo,
-                    "description": listing.description,
-                    "price": listing.price,
-                    "form": BidForm(),
-                    "button": button,
-                    "message": "You have the highest bid."
-                })
+
+            if not bid:
+                pass
             else:
-                return render(request, "auctions/listing.html", {
-                    "pk": listing.id,
-                    "username": username,
-                    "name": listing.name,
-                    "photo": listing.photo,
-                    "description": listing.description,
-                    "price": listing.price,
-                    "form": BidForm(),
-                    "button": button,
-                })
+                bid = bid.latest('bid')
+                # Check if the user has the highest bid
+                if bid.user == user:
+                    return render(request, "auctions/listing.html", {
+                        "pk": listing.id,
+                        "username": username,
+                        "name": listing.name,
+                        "photo": listing.photo,
+                        "description": listing.description,
+                        "price": listing.price,
+                        "form": BidForm(),
+                        "button": button,
+                        "message": "You have the highest bid."
+                    })
+                else:
+                    return render(request, "auctions/listing.html", {
+                        "pk": listing.id,
+                        "username": username,
+                        "name": listing.name,
+                        "photo": listing.photo,
+                        "description": listing.description,
+                        "price": listing.price,
+                        "form": BidForm(),
+                        "button": button,
+                    })
+
+            return render(request, "auctions/listing.html", {
+                "pk": listing.id,
+                "username": username,
+                "name": listing.name,
+                "photo": listing.photo,
+                "description": listing.description,
+                "price": listing.price,
+                "form": BidForm(),
+                "button": button,
+            })
+
 
 def watchlist(request):
-    user=request.user
-    watchlist_obj, created=Watchlist.objects.get_or_create(user=user)
+    user = request.user
+    watchlist_obj, created = Watchlist.objects.get_or_create(user=user)
 
     if request.method == "POST":
-        pk=int(request.POST.get('pk'))
-        listing=Listing.objects.get(pk=pk)
+        pk = int(request.POST.get('pk'))
+        listing = Listing.objects.get(pk=pk)
 
         # Remove or add item
         if Watchlist.objects.filter(user=user).filter(listings__id=pk).exists():
@@ -205,7 +236,7 @@ def watchlist(request):
 
         return HttpResponseRedirect('/')
     else:
-        watchlist=Watchlist.objects.filter(user=user.id).get()
+        watchlist = Watchlist.objects.filter(user=user.id).get()
 
         return render(request, "auctions/watchlist.html", {
             "watchlist": watchlist
