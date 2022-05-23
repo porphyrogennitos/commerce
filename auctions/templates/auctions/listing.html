@@ -14,7 +14,7 @@
 <p>$ {{ price }}</p>
 
 {% if active %}
-{% if message %} 
+{% if message %}
 <div class="alert alert-success" role="alert">{{ message }}</div>
 {% endif %}
 {% else %}
@@ -36,9 +36,9 @@
     <button type="submit" class="btn btn-primary">Place Bid</button>
 </form>
 
-{% if close %} 
+{% if close %}
 <form action="{% url 'listing' pk %}" method="post">
-    {% csrf_token %} 
+    {% csrf_token %}
     <button type="submit" class="btn btn-danger" name="close">{{ close }}</button>
 </form>
 {% endif %}
@@ -50,4 +50,25 @@
     <li>Listed by: {{ username }}</li>
 </ul>
 {% endif %}
+<br>
+<h2>Comments</h2>
+<form action="{% url 'listing' pk %}" method="post">
+    {% csrf_token %}
+    {{ comment }}
+    <button class="btn btn-success type=" submit" name="comment_submit">Comment</button>
+</form>
+
+<br>
+
+
+<div class="container-fluid">
+    {% for comment in comments %}
+    <div class="row bg-info">
+        <p class="fw-bold">{{ comment.user }}</p>
+        <p>{{ comment.comment }}</p>
+    </div>
+
+    <br>
+    {% endfor %}
+</div>
 {% endblock %}

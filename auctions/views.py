@@ -1,3 +1,4 @@
+import re
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -95,6 +96,25 @@ def listing(request, id):
 
     if request.method == "POST":
 
+        # If user commented
+        if "comment_submit" in request.POST:
+            form = CommentForm(request.POST)
+            
+            if form.is_valid():
+                comment = form.cleaned_data['comment']
+                listing = Listing.objects.get(pk=id)
+                
+                # print(Comment.objects.get(pk=2).listings.all())  
+                # comment_obj, created = Comment.objects.get_or_create(user=user)
+
+
+                return HttpResponse('Yes!')
+            else:
+                # print(form.errors.as_data())
+                return render(request, "auctions/listing.html", {
+                    "comment": form
+                })
+
         # If user pressed "Close Auction".
         if "close" in request.POST:
             listing = Listing.objects.get(id=id)
@@ -132,6 +152,9 @@ def listing(request, id):
                 return HttpResponseRedirect(reverse('listing', args=[id]))
     else:
         listing = Listing.objects.get(pk=id)
+        print(Comment.objects.get(pk=id).comment)
+        comments = Comment.objects.filter(listings__id=id)
+        print(comments)
 
         # Check if item is in watchlist
         if Watchlist.objects.filter(user=user.id).filter(listings__id=id).exists():
@@ -163,7 +186,9 @@ def listing(request, id):
                         "button": button,
                         "close": close,
                         "active": listing.active,
-                        "message": "You have the highest bid."
+                        "message": "You have the highest bid.",
+                        "comment": CommentForm(),
+                        'comments': comments
                     })
                 else:
                     return render(request, "auctions/listing.html", {
@@ -175,7 +200,9 @@ def listing(request, id):
                         "form": BidForm(),
                         "button": button,
                         "active": listing.active,
-                        "close": close
+                        "close": close,
+                        "comment": CommentForm(),
+                        'comments': comments
                     })
 
             return render(request, "auctions/listing.html", {
@@ -187,7 +214,9 @@ def listing(request, id):
                 "form": BidForm(),
                 "button": button,
                 "active": listing.active,
-                "close": close
+                "close": close,
+                "comment": CommentForm(),
+                'comments': comments
             })
         else:
             username = listing.user.username
@@ -208,7 +237,9 @@ def listing(request, id):
                         "form": BidForm(),
                         "button": button,
                         "active": listing.active,
-                        "message": "You have the highest bid."
+                        "message": "You have the highest bid.",
+                        "comment": CommentForm(),
+                        'comments': comments
                     })
                 else:
                     return render(request, "auctions/listing.html", {
@@ -221,6 +252,8 @@ def listing(request, id):
                         "form": BidForm(),
                         "active": listing.active,
                         "button": button,
+                        "comment": CommentForm(),
+                        'comments': comments
                     })
 
             return render(request, "auctions/listing.html", {
@@ -233,6 +266,8 @@ def listing(request, id):
                 "form": BidForm(),
                 "active": listing.active,
                 "button": button,
+                "comment": CommentForm(),
+                'comments': comments
             })
 
 

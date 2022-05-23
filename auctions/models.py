@@ -33,6 +33,9 @@ class Comment(models.Model):
     listings = models.ManyToManyField(Listing, blank=True)
     comment = models.TextField()
 
+    def __str__(self):
+        return f"{self.user}, {self.listings}, {self.comment}"
+
 
 class Watchlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_watchlist")

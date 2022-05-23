@@ -18,3 +18,7 @@ class BidForm(forms.Form):
             'placeholder': 'Bid'
         }
     ))
+
+
+class CommentForm(forms.Form):
+    comment = forms.CharField(label='', max_length=300, widget=forms.Textarea)
