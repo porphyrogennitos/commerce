@@ -103,12 +103,17 @@ def listing(request, id):
             if form.is_valid():
                 comment = form.cleaned_data['comment']
                 listing = Listing.objects.get(pk=id)
+
+                comment_obj, created = Comment.objects.get_or_create(user=user, comment=comment)
+                comment_obj.listings.add(listing)
+
+                print(comment_obj)
                 
                 # print(Comment.objects.get(pk=2).listings.all())  
                 # comment_obj, created = Comment.objects.get_or_create(user=user)
 
 
-                return HttpResponse('Yes!')
+                return HttpResponseRedirect(reverse('listing', args=[id]))
             else:
                 # print(form.errors.as_data())
                 return render(request, "auctions/listing.html", {
